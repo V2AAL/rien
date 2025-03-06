@@ -1,0 +1,42 @@
+/* Style de base */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    opacity: 0; /* Début avec une opacité de 0 pour faire apparaître progressivement */
+    transition: opacity 2s ease-in-out; /* Transition pour l'animation */
+    padding: 20px;
+    border: 3px solid #333; /* Encadré autour du titre */
+    border-radius: 10px;
+    width: 60%;
+    margin: 0 auto;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    opacity: 0; /* Début avec une opacité de 0 pour faire apparaître progressivement */
+    transition: opacity 1s ease-in-out 1s; /* Transition pour l'animation avec un délai */
+}
+
+button:hover {
+    background-color: #45a049;
+}

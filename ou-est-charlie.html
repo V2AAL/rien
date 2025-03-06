@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where's Waldo</title>
+  <style>
+    h1 {
+      background: url(https://images-na.ssl-images-amazon.com/images/G/01/videogames/detail-page/wheres.waldo.fj.logo.242.jpg) no-repeat;
+      background-size: contain;
+      height: 300px;
+      width: 15%;
+      position: absolute;
+      text-indent: -9999px;
+      top: 5%;
+      left: 5%;
+    }
+
+    .zoomer {
+      background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/40645/Whare-s-Waldo-wheres-waldo-13776536-1024-768.jpg) no-repeat;
+      position: absolute;
+      background-size: contain;
+      height: 384px;
+      left: 50%;
+      margin: -192px;
+      top: 50%;
+      width: 512px;
+      filter: grayscale(100%); /* Appliquer le filtre noir et blanc */
+    }
+
+    .small {
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mag {
+      display: block; /* La loupe doit toujours être visible */
+      border: 3px solid #666;
+      border-radius: 50%;
+      pointer-events: none;
+      width: 50px;  /* Loupe plus petite */
+      height: 50px;  /* Loupe plus petite */
+      margin: -25px 0 0 -25px;  /* Ajuster pour centrer la loupe */
+      position: absolute;
+      z-index: 2; /* S'assurer que la loupe est au-dessus de l'ombre */
+    }
+
+    .mag:before {
+      content: '';
+      border-radius: 50%;
+      position: absolute;
+      transform: rotate(30deg);
+      height: 40px;  /* Réduire encore la taille de l'intérieur de la loupe */
+      width: 40px;   /* Réduire encore la taille de l'intérieur de la loupe */
+      top: 5px;
+      left: 5px;
+      border-top: 10px solid rgba(255,255,255,.5);
+      border-bottom: 3px solid rgba(255,255,255,.5);
+      box-sizing: border-box;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.7) inset;  /* Agrandir l'ombre autour de la loupe */
+    }
+
+    .mag:after {
+      content: '';
+      position: absolute;
+      transform: rotate(30deg);
+      height: 50px;
+      width: 10px;
+      background: black;
+      bottom: -40px;
+      left: 6px;
+      border-top: 10px solid #999;
+      border-bottom: 3px solid #999;
+      box-sizing: border-box;
+    }
+
+    /* Slow click message */
+    #slow-message {
+      display: none;
+      position: absolute;
+      top: 90%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: red;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Counter */
+    #counter {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Style du bouton pour redirection */
+    #redirectBtn {
+      display: none; /* Le bouton est caché par défaut */
+      position: absolute;
+      top: 85%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #redirectBtn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Where's Waldo</h1>
+  
+  <div class="zoomer">
+    <div class="small"></div>
+    <div class="mag"></div>
+  </div>
+
+  <!-- Slow click message -->
+  <div id="slow-message">RALENTIIIIIIT !</div>
+
+  <!-- Counter -->
+  <div id="counter">Essais restants: 3</div>
+
+  <!-- Bouton de redirection -->
+  <button id="redirectBtn">Cliquez ici pour voir la suite</button>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Position de Charlie sur l'image (par exemple, x=300, y=200, à ajuster selon l'image réelle)
+    const charliePosition = { x: 254.767, y: 145.333, radius: 50 };
+    let lastClickTime = 0;
+    let attemptsLeft = 3; // Nombre d'essais restants
+
+    // Fonction pour vérifier si le clic est sur Charlie
+    function checkIfCharlieClicked(mouseX, mouseY) {
+      const dx = mouseX - charliePosition.x;
+      const dy = mouseY - charliePosition.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      return distance <= charliePosition.radius;
+    }
+
+    function zoomOff() {
+      $(this).css({
+        'mask-image': ''
+      });
+      $('.mag').hide();
+    }
+
+    function zoom(e) {
+      var mouseX = e.pageX - $(this).offset().left,
+        mouseY = e.pageY - $(this).offset().top,
+        w = $(this).width(),
+        h = $(this).height();
+
+      // On applique le masque sur l'image
+      $(this).css({
+        'mask-image': 'radial-gradient(circle 70px at ' + mouseX + 'px ' + mouseY + 'px, rgba(255,255,255,1) 90%, rgba(255,255,255,0) 100%)',
+        'cursor': 'none'
+      });
+
+      $('.mag').show().css({
+        'left': mouseX,
+        'top': mouseY
+      });
+    }
+
+    $('.small').on({
+      'mousemove': zoom,
+      'mouseleave': zoomOff,
+      'click': function(e) { // Détecter le clic sur l'image
+        const currentTime = Date.now();
+        const timeDifference = currentTime - lastClickTime;
+
+        if (timeDifference < 6000) {
+          // Si le clic est trop rapide
+          $('#slow-message').show();
+          setTimeout(function () {
+            $('#slow-message').hide();
+          }, 2000);
+          return;
+        }
+
+        lastClickTime = currentTime;
+
+        // Vérification si Charlie est cliqué
+        var mouseX = e.pageX - $('.zoomer').offset().left;
+        var mouseY = e.pageY - $('.zoomer').offset().top;
+
+        // Si l'utilisateur trouve Charlie
+        if (checkIfCharlieClicked(mouseX, mouseY)) {
+          alert('Félicitations! Vous avez trouvé Charlie!');
+          $('#redirectBtn').show();  // Affiche le bouton quand Charlie est trouvé
+          return;
+        }
+
+        // Si l'utilisateur ne trouve pas Charlie
+        attemptsLeft--;
+        $('#counter').text('Essais restants: ' + attemptsLeft);
+
+        if (attemptsLeft === 0) {
+          alert('Dommage ! Retour à la page Snake.');
+          window.location.href = 'snake.html'; // Rediriger vers la page snake.html
+        }
+      }
+    });
+
+    // Redirection du bouton vers la page coin_flip.html
+    document.getElementById('redirectBtn').addEventListener('click', function() {
+      window.location.href = 'coin_flip.html';
+    });
+  </script>
+
+</body>
+</html>

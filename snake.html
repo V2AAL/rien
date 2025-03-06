@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jeu Snake avec compteur de points et niveaux</title>
+  <style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  canvas {
+    border: 1px solid white;
+  }
+
+  #score {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 10px;
+  }
+
+  #message {
+    color: white;
+    font-size: 30px;
+    display: none;
+  }
+
+  #next {
+    color: white;
+    font-size: 20px;
+    display: none;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  </style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <div id="message">GAGNE !</div>
+  <div id="next" onclick="redirectToNextPage()">Cliquez ici pour la suite</div>
+
+<script>
+  // Fonction de redirection vers la page "Ou est Charlie"
+  function redirectToNextPage() {
+    window.location.href = "ou-est-charlie.html"; // Remplace "ou-est-charlie.html" par le nom de ta page
+  }
+</script>
+
+  <canvas width="400" height="400" id="game"></canvas>
+
+<script>
+var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
+
+var grid = 16;
+var count = 0;
+var score = 0; // Initialisation du score
+var speed = 4; // Vitesse initiale
+var gameInProgress = true; // Variable pour vérifier si le jeu est en cours
+
+var snake = {
+  x: 160,
+  y: 160,
+  dx: grid,
+  dy: 0,
+  cells: [],
+  maxCells: 4
+};
+
+var apple = {
+  x: 320,
+  y: 320
+};
+
+// Variables pour vérifier la progression
+var reached7 = false;
+var reached10 = false;
+var reached12 = false;
+
+// get random whole numbers in a specific range
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+// game loop
+function loop() {
+  if (!gameInProgress) return;
+
+  requestAnimationFrame(loop);
+
+  if (++count < speed) {
+    return;
+  }
+
+  count = 0;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+
+  // Check collision with walls (non-traversable)
+  if (snake.x < 0 || snake.x >= canvas.width || snake.y < 0 || snake.y >= canvas.height) {
+    resetGame();
+  }
+
+  snake.cells.unshift({ x: snake.x, y: snake.y });
+
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+
+  // Draw apple
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+
+  // Draw snake
+  context.fillStyle = 'green';
+  snake.cells.forEach(function (cell, index) {
+    context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+
+    // Snake ate apple
+    if (cell.x === apple.x && cell.y === apple.y) {
+      snake.maxCells++;
+      score++;
+      document.getElementById("score").textContent = "Score: " + score;
+
+      // Generate new apple position
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+
+      // Check for score thresholds and update speed
+      if (score === 20 && !reached7) {
+        reached7 = true;
+        speed--; // Increase speed after 7 points
+      } else if (score === 15 && !reached10) {
+        reached10 = true;
+        speed--; // Increase speed after 10 points
+      } else if (score === 10 && !reached12) {
+        reached12 = true;
+        gameInProgress = false; // Stop the game at 12 points
+        showVictoryMessage(); // Show victory message
+      }
+    }
+
+    // Collision with body
+    for (var i = index + 1; i < snake.cells.length; i++) {
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        resetGame();
+      }
+    }
+  });
+}
+
+// Listen to keyboard events to move the snake
+document.addEventListener('keydown', function (e) {
+  if (e.which === 37 && snake.dx === 0) {
+    snake.dx = -grid;
+    snake.dy = 0;
+  } else if (e.which === 38 && snake.dy === 0) {
+    snake.dy = -grid;
+    snake.dx = 0;
+  } else if (e.which === 39 && snake.dx === 0) {
+    snake.dx = grid;
+    snake.dy = 0;
+  } else if (e.which === 40 && snake.dy === 0) {
+    snake.dy = grid;
+    snake.dx = 0;
+  }
+});
+
+// Reset game
+function resetGame() {
+  // Optionally, you could add a refresh to fully restart the page:
+  location.reload(); // This will refresh the page and reset everything
+}
+
+// Show victory message
+function showVictoryMessage() {
+  document.getElementById("message").style.display = "block";
+  document.getElementById("next").style.display = "block";
+}
+
+// Proceed to the next level after victory
+function nextLevel() {
+  score = 0;
+  document.getElementById("score").textContent = "Score: " + score;
+  document.getElementById("message").style.display = "none";
+  document.getElementById("next").style.display = "none";
+  reached7 = false;
+  reached10 = false;
+  reached12 = false;
+  resetGame();
+  speed = 4; // Reset speed
+  gameInProgress = true; // Resume game
+  requestAnimationFrame(loop);
+}
+
+// Start the game
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

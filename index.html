@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page d'accueil</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Titre encadré -->
+    <h1 id="welcome-title">Bienvenue dans le jeu anti ennuieeee</h1>
+
+    <!-- Bouton -->
+    <button id="start-button" href="snake.html">Clique ici pour commencer</button>
+
+    <script>
+        document.getElementById('start-button').addEventListener('click', function() {
+          window.location.href = 'snake.html';  // Redirige vers la page du jeu
+        });
+      </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
