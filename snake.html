@@ -45,24 +45,9 @@
   <canvas width="400" height="400" id="game"></canvas>
 
 <script>
-  // Vérifier si la date d'anniversaire a déjà été enregistrée dans le localStorage
-  if (!localStorage.getItem('birthdate')) {
-      let birthdate = prompt("Entrez votre date de naissance (JJ/MM/AAAA) :");
-
-      // Si la date est correcte, on la stocke dans le localStorage
-      if (birthdate === "18/10/2001") {
-          localStorage.setItem('speed', '6');
-      } else {
-          localStorage.setItem('speed', '4');
-      }
-
-      // Enregistrer aussi la date pour éviter de la demander à nouveau
-      localStorage.setItem('birthdate', birthdate);
+  function redirectToNextPage() {
+    window.location.href = "ou-est-charlie.html";
   }
-
-  // Récupérer la vitesse depuis le localStorage
-  let speed = localStorage.getItem('speed');
-  console.log("Speed:", speed);
 
   var canvas = document.getElementById('game');
   var context = canvas.getContext('2d');
@@ -70,7 +55,8 @@
   var grid = 16;
   var count = 0;
   var score = 0;
-  var gameInProgress = true
+  var speed = 4;
+  var gameInProgress = true;
 
   var snake = {
     x: 160,
@@ -182,6 +168,7 @@
 
   requestAnimationFrame(loop);
 
+  
 </script>
 </body>
 </html>

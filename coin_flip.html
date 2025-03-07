@@ -87,6 +87,11 @@
   <label for="userGuess">Devinez la couleur (rouge ou noir):</label>
   <input type="text" id="userGuess" placeholder="Entrez rouge ou noir">
   
+  <div id="cheat-code">
+    <label for="cheatInput">CODE TRICHE:</label>
+    <input type="text" id="cheatInput" placeholder="Entrez le code ici">
+  </div>
+  
   <div id="coin">
     <div class="side-a"></div>
     <div class="side-b"></div>
@@ -100,6 +105,8 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     jQuery(document).ready(function($) {
+      var cheatActivated = false;  // Variable pour vérifier si le code triche est entré
+
       // Empêcher le clic tant qu'il n'y a pas de prédiction valide
       $('#coin').css('cursor', 'not-allowed');
 
@@ -110,6 +117,17 @@
           $('#coin').css('cursor', 'pointer');
         } else {
           $('#coin').css('cursor', 'not-allowed');
+        }
+      });
+
+      // Vérifier le code triche
+      $('#cheatInput').on('input', function() {
+        var cheatCode = $('#cheatInput').val();
+        if (cheatCode === 'PAKZDBHOVJOIAHPOZKDIHA981284NFOU283HD8H') {
+          cheatActivated = true;  // Activer le mode triche
+          alert('Code triche activé ! Les probabilités sont inversées.');
+        } else {
+          cheatActivated = false;  // Désactiver le mode triche si code incorrect
         }
       });
 
@@ -125,13 +143,20 @@
         var flipResult = Math.random();
         var coinSide;
 
-        // Si l'utilisateur choisit "rouge", alors 90% chance que ce soit rouge et 10% noir
-        if (userGuess === 'rouge') {
-          coinSide = (flipResult <= 0.1) ? 'heads' : 'tails';  // 10% chance que ce soit rouge, 90% noir
-        }
-        // Si l'utilisateur choisit "noir", alors 90% chance que ce soit noir et 10% rouge
-        else if (userGuess === 'noir') {
-          coinSide = (flipResult <= 0.1) ? 'tails' : 'heads';  // 10% chance que ce soit noir, 90% rouge
+        // Inverser les probabilités si le code triche est activé
+        if (cheatActivated) {
+          if (userGuess === 'rouge') {
+            coinSide = (flipResult <= 0.9) ? 'heads' : 'tails';  // 90% chance pour rouge, 10% pour noir
+          } else if (userGuess === 'noir') {
+            coinSide = (flipResult <= 0.9) ? 'tails' : 'heads';  // 90% chance pour noir, 10% pour rouge
+          }
+        } else {
+          // Probabilités normales
+          if (userGuess === 'rouge') {
+            coinSide = (flipResult <= 0.1) ? 'heads' : 'tails';  // 10% chance pour rouge, 90% pour noir
+          } else if (userGuess === 'noir') {
+            coinSide = (flipResult <= 0.1) ? 'tails' : 'heads';  // 10% chance pour noir, 90% pour rouge
+          }
         }
 
         $('#coin').removeClass(); // Supprimer les classes précédentes avant d'ajouter la nouvelle
@@ -158,6 +183,63 @@
         }, 100); // Délai pour lancer l'animation
       });
     });
+    // Détection de la duplication d'onglet
+const storageKey = "waldo_game_active";
+
+window.addEventListener("storage", function(event) {
+  if (event.key === storageKey && event.newValue === "duplicated") {
+    window.location.href = "snake.html"; 
+  }
+});
+
+window.addEventListener("beforeunload", function() {
+  localStorage.removeItem(storageKey);
+});
+
+// Vérifier si un autre onglet est déjà actif
+if (localStorage.getItem(storageKey)) {
+  localStorage.setItem(storageKey, "duplicated");
+  window.location.href = "snake.html";
+} else {
+  localStorage.setItem(storageKey, "active");
+}
+document.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+});
+
+// Empêcher le zoom (Ctrl + molette, Ctrl + +/- et pinch sur mobile)
+document.addEventListener("keydown", function (e) {
+    if (
+        e.ctrlKey && (e.key === "=" || e.key === "-" || e.key === "0") || // Ctrl + +/-/0
+        e.key === "F12" || // Empêcher l'inspecteur
+        (e.ctrlKey && e.shiftKey && e.key === "I") || // Empêcher Ctrl+Shift+I
+        (e.ctrlKey && e.key === "U") // Empêcher Ctrl+U
+    ) {
+        e.preventDefault();
+    }
+});
+
+// Désactiver le zoom avec le trackpad ou l’écran tactile
+document.addEventListener("wheel", function (e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener("gesturestart", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("gesturechange", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("gestureend", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Backspace" && !["input", "textarea"].includes(e.target.tagName.toLowerCase())) {
+        e.preventDefault();
+    }
+});
   </script>
 </body>
 </html>
