@@ -227,6 +227,65 @@
     document.getElementById('redirectBtn').addEventListener('click', function() {
       window.location.href = 'coin_flip.html';
     });
+
+    // Détection de la duplication d'onglet
+const storageKey = "waldo_game_active";
+
+window.addEventListener("storage", function(event) {
+  if (event.key === storageKey && event.newValue === "duplicated") {
+    window.location.href = "snake.html"; 
+  }
+});
+
+window.addEventListener("beforeunload", function() {
+  localStorage.removeItem(storageKey);
+});
+
+// Vérifier si un autre onglet est déjà actif
+if (localStorage.getItem(storageKey)) {
+  localStorage.setItem(storageKey, "duplicated");
+  window.location.href = "snake.html";
+} else {
+  localStorage.setItem(storageKey, "active");
+}
+document.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+});
+
+// Empêcher le zoom (Ctrl + molette, Ctrl + +/- et pinch sur mobile)
+document.addEventListener("keydown", function (e) {
+    if (
+        e.ctrlKey && (e.key === "=" || e.key === "-" || e.key === "0") || // Ctrl + +/-/0
+        e.key === "F12" || // Empêcher l'inspecteur
+        (e.ctrlKey && e.shiftKey && e.key === "I") || // Empêcher Ctrl+Shift+I
+        (e.ctrlKey && e.key === "U") // Empêcher Ctrl+U
+    ) {
+        e.preventDefault();
+    }
+});
+
+// Désactiver le zoom avec le trackpad ou l’écran tactile
+document.addEventListener("wheel", function (e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener("gesturestart", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("gesturechange", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("gestureend", function (e) {
+    e.preventDefault();
+});
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Backspace" && !["input", "textarea"].includes(e.target.tagName.toLowerCase())) {
+        e.preventDefault();
+    }
+});
+
   </script>
 
 </body>
